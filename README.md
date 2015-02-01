@@ -1,7 +1,5 @@
-# Assault
+# Testdiffman
 
-An API integration testing tool with three central goals:
-    - Verify that results are valid and complete against an API blueprint
-    - Make sure the API can handle a specified amount of load
-    - Display real-time results beautifully and with meaningful statistics
-    - Output useful reports on testing
+An API integration testing tool that compares a response against the API blueprint. The goal is to allow users to quickly see where their APIs are not matching the expected response.
+ 
+The output will indicate where there are differences, and indicate if it's breaking the API contract, contains new information, or is missing optional fields.
