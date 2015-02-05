@@ -1,0 +1,92 @@
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <style>
+        #RTINInput {width:50%; margin-left:25%}
+        #header {border-bottom: 2px solid black;}
+        #responseJSON hr {
+        border-bottom: 2px solid black;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row text-center">
+        <div class="row text-center" id="header">
+            <h1>RTIN View Helper Page</h1>
+            <p>Copy a single RTIN in here to view it's details:</p>
+        </div>
+        <textarea class="form-control" rows="5" id="RTINInput">29336463660246</textarea>
+        <div class="btn-group">
+            <button type="button" class="btn btn-default" id="inventoryToggle">Inventory</button>
+            <button type="button" class="btn btn-default" id="priceToggle" >Price</button>
+        </div>
+        <button type="button" class="btn btn-default" id="sendToAPI">Send Request</button>
+    </div>
+    <div class="row" id="responseBlock">
+        <h4>Request</h4>
+        <pre id="requestJSON"></pre>
+        <h3>Response</h3>
+        <pre id="responseJSON"></pre>
+    </div>
+</div>
+</body>
+<script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script language="JavaScript">
+
+        var isInventory = true;
+        var isPrice = false;
+        $('#inventoryToggle').click( function () {
+            isInventory = true;
+            $('#inventoryToggle').addClass("active")
+            isPrice = false;
+            $('#priceToggle').removeClass("active")
+        })
+        $('#priceToggle').click( function () {
+            isInventory = false;
+            $('#inventoryToggle').removeClass("active")
+
+            isPrice = true;
+            $('#priceToggle').addClass("active")
+        })
+        $( document ).ready(function() {
+            console.log("javascript is running");
+            $('#inventoryToggle').addClass("active")
+            $('#sendToAPI').click( function () {
+                var RTIN = $("#RTINInput").val();
+                console.log( "sending request " + RTIN )
+                $("#requestJSON").text( RTIN )
+                $("#sendToAPI").text( "Sending..." )
+                var endpoint = "";
+                if (isInventory) {
+                    endpoint = "/v1/rtin/inventory"
+                } else {
+                    endpoint = "/v1/rtin/price"
+                }
+                $.get( endpoint + "?rtin=" + RTIN)
+                  .done( function( data ) {
+                    console.log( "got response " + data )
+                    var arr = JSON.parse(data);
+                    var textBody = "";
+                    arr.forEach(function(item){
+                        textBody += JSON.stringify(item, null, 4)
+                        textBody += "<hr>"
+                    })
+                    if (textBody === "") {
+                        textBody = "Got empty response"
+                    }
+                    $("#responseJSON").html(textBody)
+                  })
+                  .fail( function ( jqXHR, textStatus, errorThrown  ) {
+                    console.log( "request failed" + jqXHR.responseText )
+                    $("#responseJSON").text(jqXHR.responseText)
+                  })
+                  .always(function() {
+                    $("#sendToAPI").text( "Send Request" )
+                  });
+            });
+        });
+    </script>
+</html>

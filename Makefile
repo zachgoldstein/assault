@@ -1,4 +1,4 @@
-FILES=./*.go
+FILES=./lib/*.go
 
 fmt:
 	go fmt ${FILES}
@@ -8,7 +8,7 @@ deps:
 	go get github.com/xeipuuv/gojsonschema
 
 test:
-	go test ${FILES}
+	go test ${FILES} -v
 
 live-test:
 	goconvey
